@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
@@ -9,12 +9,12 @@ COPY . .
 
 RUN go build -o /grpc-gateway main.go
 
-FROM alpine/git:latest
+FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=builder /grpc-gateway .
+COPY --from=builder /grpc-gateway /grpc-gateway
 
 EXPOSE 8080
 
-CMD ["/app/grpc-gateway", "--python-server-endpoint", "python-server:50051", "--java-server-endpoint", "java-server:50052"]
+CMD ["/grpc-gateway", "--python-server-endpoint", "python-server:50051", "--java-server-endpoint", "java-server:50052"]

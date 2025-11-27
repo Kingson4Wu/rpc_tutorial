@@ -23,7 +23,7 @@ services:
     networks:
       - rpc-network
     # By default, gateway connects to python-server. Change to 'java-server:50052' to test with Java.
-    command: ["/grpc-gateway", "--grpc-server-endpoint", "python-server:50051"]
+    command: ["/grpc-gateway", "--python-server-endpoint", "python-server:50051", "--java-server-endpoint", "java-server:50052"]
 
   envoy:
     image: envoyproxy/envoy:v1.22-latest

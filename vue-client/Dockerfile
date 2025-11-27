@@ -13,6 +13,6 @@ FROM nginx:stable-alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8082
 
 CMD ["nginx", "-g", "daemon off;"]
