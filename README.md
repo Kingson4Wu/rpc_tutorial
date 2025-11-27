@@ -1,6 +1,4 @@
-# gRPC + grpc-gateway + Multi-language Demo 
-
-这是一个功能增强版的 gRPC 跨语言微服务 Demo，展示了如何通过 .proto 协议文件一键生成多语言 RPC 代码，显著降低接口对接成本，提升开发效率。
+# gRPC Microservices Architecture Demo
 
 ## 🎯 项目目的
 
@@ -152,6 +150,7 @@ docker-compose up --build
 
 *   **gRPC-Web 支持**: 为现代浏览器提供 gRPC-Web 代理功能
 *   **协议转换**: 将 HTTP/1.1 gRPC-Web 请求转换为 HTTP/2 gRPC 请求
+*   **多后端路由**: 支持基于服务名称的智能路由（Greeter服务→Python，Weather服务→Java）
 *   **高性能**: 基于 Lyft Envoy 代理，提供高性能、可观察性、动态配置能力
 
 ### 6. Vue.js Client (`vue-client`)
@@ -160,3 +159,144 @@ docker-compose up --build
 *   **双重访问模式**: 同时支持 gRPC-Web（通过 Envoy）和 REST/JSON（通过 gRPC-Gateway）
 *   **用户体验**: 提供直观的 UI 界面，用户可动态切换访问协议
 *   **开发效率**: 消除手动 API 集成，通过代码生成实现快速开发
+
+## 🚀 单独运行服务（无需 Docker）
+
+### 前提条件
+
+要单独运行服务，需要安装以下依赖：
+
+* **Python 服务**：
+  * Python 3.7+
+  * pip
+  * grpcio, grpcio-tools, and protobuf packages
+
+* **Java 服务**：
+  * Java 17+
+  * Maven 3.6+
+
+* **Go gRPC-Gateway**：
+  * Go 1.22+
+  * Protocol Buffers compiler (protoc)
+  * Go gRPC and gRPC-Gateway plugins
+
+* **Vue.js 客户端**：
+  * Node.js 16+
+  * npm or yarn
+
+* **通用**：
+  * Protocol Buffers compiler (protoc)
+  * Protobuf plugins: protoc-gen-go, protoc-gen-go-grpc, protoc-gen-grpc-gateway, protoc-gen-js, protoc-gen-grpc-web
+
+### Python gRPC Server
+
+```bash
+# 进入 Python 服务目录
+cd python-server
+
+# 创建并激活虚拟环境
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 运行服务（默认端口 50051）
+python server.py
+```
+
+### Java gRPC Server
+
+```bash
+# 进入 Java 服务目录
+cd java-server
+
+# 使用 Maven 运行（默认端口 50052）
+./mvnw spring-boot:run
+
+# 或者打包后运行
+./mvnw clean package -DskipTests
+java -jar target/java-server-0.0.1-SNAPSHOT.jar
+```
+
+### Go gRPC-Gateway
+
+```bash
+# 进入 Gateway 目录
+cd gateway
+
+# 确保已安装 Go 依赖
+go mod download
+
+# 运行 Gateway（支持路由到多个后端服务，默认端口 8080）
+# 默认路由：Greeter 服务到 Python，Weather 服务到 Java
+go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=localhost:50052
+
+# 或者自定义路由配置
+go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=localhost:50053
+```
+
+### Envoy Proxy
+
+```bash
+# 单独运行 Envoy 需要先安装 Envoy
+# 运行 Envoy（默认端口 8081，支持多后端路由）
+envoy -c envoy.yaml --base-id 1
+```
+
+### Vue.js Client
+
+```bash
+# 进入 Vue 客户端目录
+cd vue-client
+
+# 安装依赖
+npm install
+
+# 开发模式运行（默认端口 8082）
+npm run serve
+
+# 或者构建后运行
+npm run build
+# 然后使用任意 HTTP 服务器提供服务，如：
+npx serve -s dist
+```
+
+### 重新生成 Protobuf 代码
+
+如果修改了 `proto/services.proto` 文件，需要重新生成所有语言的代码：
+
+```bash
+# Python
+python -m grpc_tools.protoc -I=./proto --python_out=./python-server --grpc_python_out=./python-server ./proto/services.proto
+
+# Go (for gateway)
+protoc -I=./proto --go_out=./gateway --go_opt=paths=source_relative --go-grpc_out=./gateway --go-grpc_opt=paths=source_relative --grpc-gateway_out=./gateway --grpc-gateway_opt=paths=source_relative ./proto/services.proto
+
+# Java
+protoc -I=./proto --java_out=./java-server/src/main/java --grpc-java_out=./java-server/src/main/java ./proto/services.proto
+
+# JavaScript (for grpc-web)
+protoc -I=./proto --js_out=import_style=commonjs,binary:./vue-client/src/generated --grpc-web_out=import_style=typescript,mode=grpcwebtext:./vue-client/src/generated ./proto/services.proto
+```
+
+### 手动启动完整环境
+
+按以下顺序启动服务：
+
+1. 启动 Java 服务: `cd java-server && ./mvnw spring-boot:run`
+2. 启动 Python 服务: `cd python-server && source venv/bin/activate && python server.py`
+3. 启动 Go Gateway: `cd gateway && go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=localhost:50052`
+4. 启动 Envoy (可选): `envoy -c envoy.yaml`
+5. 启动 Vue client: `cd vue-client && npm run serve`
+
+所有服务将通过 localhost 相互通信，访问地址与 Docker 配置相同：
+* Vue.js Client: http://localhost:8082
+* gRPC-Gateway: http://localhost:8080
+* Envoy Proxy: http://localhost:8081
+* Python Server: http://localhost:50051
+* Java Server: http://localhost:50052
+
+Envoy will route requests intelligently:
+* Greeter service requests → Python server (localhost:50051)
+* Weather service requests → Java server (localhost:50052)

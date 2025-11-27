@@ -17,25 +17,39 @@ static_resources:
             virtual_hosts:
             - name: local_service
               domains: ["*"]
+              # Route Greeter service to Python server
               routes:
-              - match: { prefix: "/" }
+              - match:
+                  prefix: "/rpc_tutorial.Greeter/"
                 route:
-                  cluster: grpc_backend
-                  # Disable timeout to allow for long-running streams
+                  cluster: python_grpc_backend
+                  timeout: 0s  # Disable timeout for long-running streams
+              # Route Weather service to Java server  
+              - match:
+                  prefix: "/rpc_tutorial.Weather/"
+                route:
+                  cluster: java_grpc_backend
+                  timeout: 0s  # Disable timeout for long-running streams
+              # Default route to Python server for any other requests
+              - match:
+                  prefix: "/"
+                route:
+                  cluster: python_grpc_backend
                   timeout: 0s
           http_filters:
           - name: envoy.filters.http.grpc_web
           - name: envoy.filters.http.cors
           - name: envoy.filters.http.router
   clusters:
-  - name: grpc_backend
+  # Python gRPC server cluster
+  - name: python_grpc_backend
     connect_timeout: 0.25s
     type: logical_dns
     # Http2 is required for gRPC
     http2_protocol_options: {}
     lb_policy: round_robin
     load_assignment:
-      cluster_name: grpc_backend
+      cluster_name: python_grpc_backend
       endpoints:
       - lb_endpoints:
         - endpoint:
@@ -44,3 +58,20 @@ static_resources:
                 # This needs to match the service name in docker-compose.yml
                 address: python-server 
                 port_value: 50051
+  # Java gRPC server cluster                
+  - name: java_grpc_backend
+    connect_timeout: 0.25s
+    type: logical_dns
+    # Http2 is required for gRPC
+    http2_protocol_options: {}
+    lb_policy: round_robin
+    load_assignment:
+      cluster_name: java_grpc_backend
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                # This needs to match the service name in docker-compose.yml
+                address: java-server 
+                port_value: 50052

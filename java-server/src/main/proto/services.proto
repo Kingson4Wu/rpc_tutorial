@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package rpc_tutorial;
+
+import "google/api/annotations.proto";
+
+option go_package = "rpc-tutorial/gateway";
+option java_multiple_files = true;
+option java_package = "com.example.grpc.services";
+option java_outer_classname = "ServicesProto";
+
+// The greeter service definition.
+service Greeter {
+  // Unary call
+  rpc SayHello(HelloRequest) returns (HelloReply) {
+    option (google.api.http) = {
+      post: "/v1/greeter/say_hello"
+      body: "*"
+    };
+  }
+
+  // Server-streaming call
+  rpc SayHelloStream(HelloRequest) returns (stream HelloReply);
+
+  // Unary call for backend-to-backend communication demonstration
+  rpc AggregateHello(HelloRequest) returns (HelloReply) {
+      option (google.api.http) = {
+      post: "/v1/greeter/aggregate_hello"
+      body: "*"
+    };
+  }
+}
+
+// The weather service definition
+service Weather {
+    // Unary call to get weather information
+    rpc GetWeather(WeatherRequest) returns (WeatherReply) {
+        option (google.api.http) = {
+          get: "/v1/weather/{city}"
+        };
+    }
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings.
+message HelloReply {
+  string message = 1;
+}
+
+// The request message for weather, containing the city.
+message WeatherRequest {
+    string city = 1;
+}
+
+// Enum for weather conditions
+enum WeatherCondition {
+    SUNNY = 0;
+    CLOUDY = 1;
+    RAINY = 2;
+    STORMY = 3;
+}
+
+// The response message for weather.
+message WeatherReply {
+    float temperature = 1; // in Celsius
+    int32 humidity = 2; // in percentage
+    WeatherCondition condition = 3;
+    string description = 4;
+}

@@ -1,8 +1,5 @@
 package com.example.grpc.services;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.slf4j.Logger;
@@ -10,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-@GrpcService
+@GrpcService // This annotation tells Spring Boot to register this as a gRPC service
 public class GreeterServiceImpl extends GreeterGrpc.GreeterImplBase {
 
     private static final Logger log = LoggerFactory.getLogger(GreeterServiceImpl.class);
@@ -33,7 +30,10 @@ public class GreeterServiceImpl extends GreeterGrpc.GreeterImplBase {
         String javaGreeting = "Hello, " + request.getName() + " from Java!";
         
         // 2. Create gRPC client to call Python server
-        ManagedChannel channel = ManagedChannelBuilder.forTarget("python-server:50051")
+        // Use localhost for local development, docker service name in container
+        String pythonServerAddress = System.getProperty("grpc.client.use-docker", "false").equals("true") ? 
+                                   "python-server:50051" : "localhost:50051";
+        io.grpc.ManagedChannel channel = io.grpc.ManagedChannelBuilder.forTarget(pythonServerAddress)
                 .usePlaintext()
                 .build();
         
@@ -62,7 +62,7 @@ public class GreeterServiceImpl extends GreeterGrpc.GreeterImplBase {
             responseObserver.onNext(reply);
             responseObserver.onCompleted();
             
-        } catch (StatusRuntimeException e) {
+        } catch (io.grpc.StatusRuntimeException e) {
             log.error("Failed to call Python server: {}", e.getStatus());
             
             // Fallback response if Python server is not available

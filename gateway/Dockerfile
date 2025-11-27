@@ -17,4 +17,4 @@ COPY --from=builder /grpc-gateway .
 
 EXPOSE 8080
 
-CMD ["/app/grpc-gateway", "--grpc-server-endpoint", "python-server:50051"]
+CMD ["/app/grpc-gateway", "--python-server-endpoint", "python-server:50051", "--java-server-endpoint", "java-server:50052"]

@@ -4,7 +4,7 @@
 // - protoc             v4.23.4
 // source: services.proto
 
-package gateway
+package pb
 
 import (
 	context "context"
