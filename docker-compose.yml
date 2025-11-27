@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  python-server:
+    build: ./python-server
+    restart: on-failure
+    networks:
+      - rpc-network
+
+  java-server:
+    build: ./java-server
+    restart: on-failure
+    networks:
+      - rpc-network
+      
+  gateway:
+    build: ./gateway
+    ports:
+      - "8080:8080" # JSON Gateway port
+    depends_on:
+      - python-server
+    restart: on-failure
+    networks:
+      - rpc-network
+    # By default, gateway connects to python-server. Change to 'java-server:50052' to test with Java.
+    command: ["/grpc-gateway", "--grpc-server-endpoint", "python-server:50051"]
+
+  envoy:
+    image: envoyproxy/envoy:v1.22-latest
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    ports:
+      - "8081:8081" # gRPC-Web proxy port
+      - "9901:9901" # Envoy admin port
+    depends_on:
+      - python-server
+      - java-server
+    restart: on-failure
+    networks:
+      - rpc-network
+
+  vue-client:
+    build: ./vue-client
+    ports:
+      - "8082:80" # Vue app served on 8082 to avoid port conflicts
+    depends_on:
+      - envoy
+      - gateway
+    restart: on-failure
+    networks:
+      - rpc-network
+
+networks:
+  rpc-network:
+    driver: bridge

@@ -1,0 +1,8 @@
+grpc:
+  server:
+    port: 50052
+    inProcessServerName: 'greeter-server'
+
+logging:
+  level:
+    com.example.grpc: INFO
