@@ -56,16 +56,15 @@
 
 <script>
 // Import generated Protobuf messages and gRPC clients (for gRPC-Web)
-const { HelloRequest, WeatherRequest, WeatherCondition } = require('../generated/services_pb.js');
-const { GreeterClient } = require('../generated/ServicesServiceClientPb.ts');
-const { WeatherClient } = require('../generated/ServicesServiceClientPb.ts');
+import { HelloRequest, WeatherRequest, WeatherCondition } from '../generated/services_pb.js';
+import { GreeterClient, WeatherClient } from '../generated/ServicesServiceClientPb.js';
 
 // Create instances of the gRPC-Web clients (connecting to Envoy proxy)
 const grpcGreeterClient = new GreeterClient('http://localhost:8081');
 const grpcWeatherClient = new WeatherClient('http://localhost:8081');
 
 export default {
-  name: 'Greeter',
+  name: 'GreeterComponent',
   data() {
     return {
       name: 'World',
