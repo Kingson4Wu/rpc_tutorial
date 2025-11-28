@@ -26,9 +26,9 @@
                                     +------------------+
                                     |                  |
         +-------------------------> |   Vue.js Client  |
-        |                         | (Port 8082)      |
-        |                         |                  |
-  +-----+------+                  +------------------+
+        |                           | (Port 8082)      |
+        |                           |                  |
+  +-----+------+                    +------------------+
   |            |                         |
   |   User     |                         | (gRPC-Web or REST) - Vue client supports both
   | (Browser)  |                         |
@@ -36,27 +36,27 @@
         |                   +-------------------------+
         |                   |                         |
         +-----------------> |      Envoy Proxy        |  ←──┐
-         (HTTP/1.1)        |     (Port 8081)         |    │ gRPC-Web: Browser → Envoy → gRPC
-                           |  (gRPC-Web support)     |    │ (Protocol auto-conversion)
-                           +------------+------------+    │
-                                        | (gRPC)         │
-                                        v                │
-                           +-------------------------+   │
-                           |                         |   │
-                           |    Python gRPC Server   | --+-- (Bidirectional gRPC communication)
-                           | (Greeter & Weather)     |   │
-                           |      (Port 50051)       |   │
-                           |                         |   │
-                           +-------------------------+   │
-                                        ^                │
-                                        | (gRPC)         │
-                           +-------------------------+   │
-                           |                         |   │
-                           |     Java gRPC Server    | --┘
-                           |  (Greeter & Weather)    |
-                           |       (Port 50052)      |
-                           |                         |
-                           +-------------------------+
+         (HTTP/1.1)         |     (Port 8081)         |     │ gRPC-Web: Browser → Envoy → gRPC
+                            |  (gRPC-Web support)     |     │ (Protocol auto-conversion)
+                            +------------+------------+     │
+                                         | (gRPC)           │
+                                         v                  │
+                            +-------------------------+     │
+                            |                         |     │
+                            |    Python gRPC Server   |  ---+-- (Bidirectional gRPC communication)
+                            | (Greeter & Weather)     |     │
+                            |      (Port 50051)       |     │
+                            |                         |     │
+                            +-------------------------+     │
+                                         ^                  │
+                                         | (gRPC)           │
+                            +-------------------------+     │
+                            |                         |     │
+                            |     Java gRPC Server    |  ---┘
+                            |  (Greeter & Weather)    |
+                            |       (Port 50052)      |
+                            |                         |
+                            +-------------------------+
                                           ^
                                           | (REST/JSON HTTP/1.1)
                                           |
