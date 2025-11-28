@@ -4,6 +4,8 @@ services:
   python-server:
     build: ./python-server
     restart: on-failure
+    environment:
+      - JAVA_SERVER_ADDRESS=java-server:50052
     networks:
       - rpc-network
 
@@ -20,6 +22,8 @@ services:
     depends_on:
       - python-server
     restart: on-failure
+    environment:
+      - ENV=docker
     networks:
       - rpc-network
     # By default, gateway connects to python-server. Change to 'java-server:50052' to test with Java.

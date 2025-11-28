@@ -5,6 +5,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -26,6 +27,17 @@ func run() error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
+
+	// Set default endpoints based on environment
+	if os.Getenv("ENV") == "docker" {
+		// In docker environment, use container names as hostnames
+		if *pythonServerEndpoint == "localhost:50051" {
+			*pythonServerEndpoint = "python-server:50051"
+		}
+		if *javaServerEndpoint == "localhost:50052" {
+			*javaServerEndpoint = "java-server:50052"
+		}
+	}
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}

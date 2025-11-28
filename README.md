@@ -74,30 +74,58 @@
 > Vue.js 客户端支持**双重协议**，用户可在界面上动态切换访问方式。
 
 
-## 🚀 快速开始 (一键运行)
+## 🚀 快速开始
 
-### 前提条件
+### 两种运行方式
 
-确保您已安装：
+本项目支持两种运行方式，您可以根据自己的需求选择：
+
+#### 1. 使用 Docker Compose (推荐)
+
+**前提条件**:
 *   [Docker](https://www.docker.com/get-started) & [Docker Compose](https://docs.docker.com/compose/install/)
 
-> **注意**: 所有其他依赖（包括 Protobuf 编译器和插件）都已经通过 Docker 容器化，无需在本地安装。
-
-### 一键运行项目
+**一键运行项目**:
 
 在项目根目录执行以下命令：
-
 ```bash
 docker-compose up --build
 ```
 
 这将自动构建所有服务的 Docker 镜像并启动完整的微服务架构。
 
+#### 2. 本地开发模式
+
+**前提条件**:
+* Python 3.7+
+* Java 17+ & Maven 3.6+
+* Go 1.22+
+* Node.js 16+
+* Envoy Proxy
+* Protocol Buffers compiler (protoc) with plugins
+
+**快速启动**:
+
+使用提供的脚本一键启动所有服务：
+```bash
+# 使脚本可执行
+chmod +x run_services.sh
+
+# 启动所有服务
+./run_services.sh local
+```
+
+或使用 Makefile (如果您的系统支持):
+```bash
+make local
+```
+
 ### 访问和测试
 
 *   **Vue.js 前端**:
     *   访问 `http://localhost:8082`
     *   在界面上选择 **"gRPC-Web via Envoy"** 或 **"REST/JSON via gRPC-Gateway"** 访问方式
+    *   新增 **"Environment"** 选项，可以选择 **"Local"** 或 **"Container"** 以适应不同部署方式
     *   与 `Greeter` 和 `Weather` 服务进行交互
     *   点击 "Aggregate Hello" 按钮来测试双向的后端间调用 (Python ↔ Java)
 
@@ -160,7 +188,7 @@ docker-compose up --build
 *   **用户体验**: 提供直观的 UI 界面，用户可动态切换访问协议
 *   **开发效率**: 消除手动 API 集成，通过代码生成实现快速开发
 
-## 🚀 单独运行服务（无需 Docker）
+## 🚀 单独运行服务（本地开发模式）
 
 ### 前提条件
 
@@ -184,11 +212,41 @@ docker-compose up --build
   * Node.js 16+
   * npm or yarn
 
+* **Envoy Proxy**：
+  * Envoy Proxy (用于本地 gRPC-Web 支持)
+
 * **通用**：
   * Protocol Buffers compiler (protoc)
   * Protobuf plugins: protoc-gen-go, protoc-gen-go-grpc, protoc-gen-grpc-gateway, protoc-gen-js, protoc-gen-grpc-web
 
-### Python gRPC Server
+### 使用便捷脚本运行（推荐）
+
+项目提供了便捷脚本，可以一键启动所有本地服务：
+
+```bash
+# 使脚本可执行
+chmod +x run_services.sh
+
+# 启动所有本地服务
+./run_services.sh local
+
+# 停止所有本地服务
+./run_services.sh stop-local
+```
+
+或者使用 Makefile（如果您的系统支持）：
+
+```bash
+# 使用 Make 启动所有本地服务
+make local
+
+# 停止所有本地服务
+make clean
+```
+
+### 手动运行各个服务
+
+#### Python gRPC Server
 
 ```bash
 # 进入 Python 服务目录
@@ -205,7 +263,7 @@ pip install -r requirements.txt
 python server.py
 ```
 
-### Java gRPC Server
+#### Java gRPC Server
 
 ```bash
 # 进入 Java 服务目录
@@ -219,7 +277,7 @@ cd java-server
 java -jar target/java-server-0.0.1-SNAPSHOT.jar
 ```
 
-### Go gRPC-Gateway
+#### Go gRPC-Gateway
 
 ```bash
 # 进入 Gateway 目录
@@ -236,15 +294,17 @@ go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=l
 go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=localhost:50053
 ```
 
-### Envoy Proxy
+#### Envoy Proxy (本地环境)
+
+对于本地开发，使用专门的 envoy-local.yaml 配置文件：
 
 ```bash
 # 单独运行 Envoy 需要先安装 Envoy
-# 运行 Envoy（默认端口 8081，支持多后端路由）
-envoy -c envoy.yaml --base-id 1
+# 运行本地 Envoy（默认端口 8081，支持多后端路由）
+envoy -c envoy-local.yaml --base-id 1
 ```
 
-### Vue.js Client
+#### Vue.js Client
 
 ```bash
 # 进入 Vue 客户端目录
@@ -287,7 +347,7 @@ protoc -I=./proto --js_out=import_style=commonjs,binary:./vue-client/src/generat
 1. 启动 Java 服务: `cd java-server && ./mvnw spring-boot:run`
 2. 启动 Python 服务: `cd python-server && source venv/bin/activate && python server.py`
 3. 启动 Go Gateway: `cd gateway && go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=localhost:50052`
-4. 启动 Envoy (可选): `envoy -c envoy.yaml`
+4. 启动本地 Envoy: `envoy -c envoy-local.yaml`
 5. 启动 Vue client: `cd vue-client && npm run serve`
 
 所有服务将通过 localhost 相互通信，访问地址与 Docker 配置相同：
@@ -300,3 +360,16 @@ protoc -I=./proto --js_out=import_style=commonjs,binary:./vue-client/src/generat
 Envoy will route requests intelligently:
 * Greeter service requests → Python server (localhost:50051)
 * Weather service requests → Java server (localhost:50052)
+
+### 配置说明
+
+#### Envoy 配置
+
+* `envoy.yaml` - 用于容器化环境，使用容器服务名称作为后端地址
+* `envoy-local.yaml` - 用于本地开发环境，使用 localhost 作为后端地址
+
+#### 环境变量
+
+* 本地运行时 Python 服务默认连接到 `localhost:50052`
+* Docker 运行时通过环境变量 `JAVA_SERVER_ADDRESS=java-server:50052` 指定 Java 服务地址
+* Gateway 根据 `ENV=docker` 环境变量自动使用正确的后端地址

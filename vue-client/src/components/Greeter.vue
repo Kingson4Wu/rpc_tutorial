@@ -2,16 +2,29 @@
   <div class="greeter">
     <h1>gRPC-Web and REST API Client (Dual Access)</h1>
     
+    <!-- Environment selector -->
+    <div class="env-selector">
+      <h3>Select Environment:</h3>
+      <label>
+        <input type="radio" v-model="environment" value="local" />
+        Local (Direct to Services)
+      </label>
+      <label>
+        <input type="radio" v-model="environment" value="container" />
+        Container (Through Envoy/Gateway)
+      </label>
+    </div>
+
     <!-- Access Method Selector -->
     <div class="access-selector">
       <h3>Select Access Method:</h3>
       <label>
         <input type="radio" v-model="accessMethod" value="grpc-web" />
-        gRPC-Web via Envoy (Port 8081)
+        gRPC-Web via Envoy
       </label>
       <label>
         <input type="radio" v-model="accessMethod" value="rest" />
-        REST/JSON via gRPC-Gateway (Port 8080)
+        REST/JSON via gRPC-Gateway
       </label>
     </div>
 
@@ -59,10 +72,6 @@
 import { HelloRequest, WeatherRequest, WeatherCondition } from '../generated/services_pb.js';
 import { GreeterClient, WeatherClient } from '../generated/ServicesServiceClientPb.js';
 
-// Create instances of the gRPC-Web clients (connecting to Envoy proxy)
-const grpcGreeterClient = new GreeterClient('http://localhost:8081');
-const grpcWeatherClient = new WeatherClient('http://localhost:8081');
-
 export default {
   name: 'GreeterComponent',
   data() {
@@ -74,19 +83,50 @@ export default {
       streamResponses: [],
       status: 'Ready',
       accessMethod: 'grpc-web', // Default to gRPC-Web
+      environment: 'local', // Default to local environment
     };
   },
+  computed: {
+    // Dynamically determine the gRPC-Web endpoint based on environment
+    grpcEndpoint() {
+      if (this.environment === 'container') {
+        // In container environment, connect to envoy service
+        return 'http://localhost:8081'; // envoy proxy in docker-compose
+      } else {
+        // In local environment, connect directly to the service
+        return 'http://localhost:8081'; // for local envoy proxy
+      }
+    },
+    // Dynamically determine the REST endpoint based on environment
+    restEndpoint() {
+      if (this.environment === 'container') {
+        // In container environment, connect to gateway service
+        return 'http://localhost:8080'; // gateway in docker-compose
+      } else {
+        // In local environment, connect directly to the service
+        return 'http://localhost:8080'; // local gateway
+      }
+    }
+  },
   methods: {
+    // Create gRPC clients dynamically based on environment
+    getGrpcGreeterClient() {
+      return new GreeterClient(this.grpcEndpoint);
+    },
+    getGrpcWeatherClient() {
+      return new WeatherClient(this.grpcEndpoint);
+    },
+    
     // --- Greeter Methods ---
     callSayHello() {
-      this.status = `Sending SayHello request via ${this.accessMethod.toUpperCase()}...`;
+      this.status = `Sending SayHello request via ${this.accessMethod.toUpperCase()} in ${this.environment} environment...`;
       
       if (this.accessMethod === 'grpc-web') {
         const request = new HelloRequest();
         request.setName(this.name);
         console.log('grpc-web1');
 
-        grpcGreeterClient.sayHello(request, {})
+        this.getGrpcGreeterClient().sayHello(request, {})
           .then(response => {
             console.log('grpc-web success', response);
             this.status = 'Unary call successful via gRPC-Web.';
@@ -100,7 +140,7 @@ export default {
       } else { // REST API
         const payload = { name: this.name };
         
-        fetch('http://localhost:8080/v1/greeter/say_hello', {
+        fetch(`${this.restEndpoint}/v1/greeter/say_hello`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -120,13 +160,13 @@ export default {
     },
 
     callAggregateHello() {
-      this.status = `Sending AggregateHello request via ${this.accessMethod.toUpperCase()}...`;
+      this.status = `Sending AggregateHello request via ${this.accessMethod.toUpperCase()} in ${this.environment} environment...`;
       
       if (this.accessMethod === 'grpc-web') {
         const request = new HelloRequest();
         request.setName(this.name);
         
-        grpcGreeterClient.aggregateHello(request, {})
+        this.getGrpcGreeterClient().aggregateHello(request, {})
           .then(response => {
             this.status = 'Aggregate call successful via gRPC-Web.';
             this.helloResponse = response.getMessage();
@@ -138,7 +178,7 @@ export default {
       } else { // REST API - AggregateHello is also mapped to REST in .proto
         const payload = { name: this.name };
         
-        fetch('http://localhost:8080/v1/greeter/aggregate_hello', {
+        fetch(`${this.restEndpoint}/v1/greeter/aggregate_hello`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -164,7 +204,7 @@ export default {
         const request = new HelloRequest();
         request.setName(this.name);
 
-        const stream = grpcGreeterClient.sayHelloStream(request, {});
+        const stream = this.getGrpcGreeterClient().sayHelloStream(request, {});
         
         stream.on('data', (response) => {
           this.streamResponses.push(response.getMessage());
@@ -188,13 +228,13 @@ export default {
 
     // --- Weather Methods ---
     callGetWeather() {
-      this.status = `Fetching weather for ${this.city} via ${this.accessMethod.toUpperCase()}...`;
+      this.status = `Fetching weather for ${this.city} via ${this.accessMethod.toUpperCase()} in ${this.environment} environment...`;
       
       if (this.accessMethod === 'grpc-web') {
         const request = new WeatherRequest();
         request.setCity(this.city);
 
-        grpcWeatherClient.getWeather(request, {})
+        this.getGrpcWeatherClient().getWeather(request, {})
           .then(response => {
             this.status = 'Weather fetched successfully via gRPC-Web.';
             this.weatherResponse = {
@@ -210,7 +250,7 @@ export default {
           });
       } else { // REST API
         // Using GET request for weather service
-        fetch(`http://localhost:8080/v1/weather/${this.city}`)
+        fetch(`${this.restEndpoint}/v1/weather/${this.city}`)
         .then(response => response.json())
         .then(data => {
           this.status = 'Weather fetched successfully via REST.';
@@ -275,7 +315,14 @@ ul {
   border-radius: 8px;
   margin-bottom: 20px;
 }
-.access-selector label {
+.env-selector {
+  background-color: #e8f4f8;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.access-selector label,
+.env-selector label {
   margin-right: 15px;
   cursor: pointer;
 }

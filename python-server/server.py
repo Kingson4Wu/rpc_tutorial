@@ -8,11 +8,16 @@ import sys
 import services_pb2
 import services_pb2_grpc
 
+import os
+
 # --- Client Stub for Backend-to-Backend Communication ---
 def get_java_server_greeting(name):
-    # Connect to the Java gRPC server
-    # The address 'java-server:50052' is the hostname and port defined in docker-compose.yml
-    with grpc.insecure_channel('127.0.0.1:50052') as channel:
+    # Determine if running in Docker container or locally
+    # Use environment variable or default to local address
+    java_server_address = os.environ.get('JAVA_SERVER_ADDRESS', '127.0.0.1:50052')
+    print(f"Connecting to Java server at: {java_server_address}")
+    
+    with grpc.insecure_channel(java_server_address) as channel:
         stub = services_pb2_grpc.GreeterStub(channel)
         try:
             # Call the SayHello method on the Java server
