@@ -53,7 +53,7 @@ static_resources:
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
   clusters:
-  # Python gRPC server cluster (外部固定 IP)
+  # Python gRPC server cluster (container environment)
   - name: python_grpc_backend
     connect_timeout: 0.25s
     type: strict_dns
@@ -66,10 +66,10 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: 127.0.0.1
+                address: python-server
                 port_value: 50051
 
-  # Java gRPC server cluster (外部固定 IP)
+  # Java gRPC server cluster (container environment)
   - name: java_grpc_backend
     connect_timeout: 0.25s
     type: strict_dns
@@ -82,5 +82,5 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: 127.0.0.1
+                address: java-server
                 port_value: 50052

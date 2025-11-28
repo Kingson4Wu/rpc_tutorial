@@ -365,8 +365,8 @@ Envoy will route requests intelligently:
 
 #### Envoy 配置
 
-* `envoy.yaml` - 用于容器化环境，使用容器服务名称作为后端地址
-* `envoy-local.yaml` - 用于本地开发环境，使用 localhost 作为后端地址
+* `envoy.yaml` - 用于容器化环境，使用容器服务名称作为后端地址 (python-server:50051, java-server:50052)
+* `envoy-local.yaml` - 用于本地开发环境，使用 localhost 作为后端地址 (127.0.0.1:50051, 127.0.0.1:50052)
 
 #### 环境变量
 

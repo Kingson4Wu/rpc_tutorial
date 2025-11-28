@@ -12,6 +12,19 @@ else
     exit 1
 fi
 
+# Check if envoy.yaml exists and has correct container addresses
+if [ -f "envoy.yaml" ]; then
+    if grep -q "python-server" envoy.yaml && grep -q "java-server" envoy.yaml; then
+        echo "✓ envoy.yaml has correct container hostnames"
+    else
+        echo "✗ envoy.yaml missing correct container hostnames"
+        exit 1
+    fi
+else
+    echo "✗ envoy.yaml file missing"
+    exit 1
+fi
+
 # Check if updated files exist and contain expected content
 if grep -q "JAVA_SERVER_ADDRESS" python-server/server.py; then
     echo "✓ Python server has environment variable support"
