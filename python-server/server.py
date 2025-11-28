@@ -2,6 +2,8 @@ import grpc
 from concurrent import futures
 import time
 import random
+import signal
+import sys
 
 import services_pb2
 import services_pb2_grpc
@@ -58,7 +60,24 @@ def serve():
     server.add_insecure_port('[::]:50051')
     server.start()
     print("Python gRPC server running on port 50051, serving Greeter service.")
-    server.wait_for_termination()
+    
+    # Set up signal handlers for graceful shutdown
+    def signal_handler(signum, frame):
+        print("Received signal to shutdown. Gracefully stopping server...")
+        server.stop(grace=5.0)  # 5 seconds grace period
+        print("Server stopped.")
+        sys.exit(0)
+    
+    signal.signal(signal.SIGINT, signal_handler)  # Handle Ctrl+C
+    signal.signal(signal.SIGTERM, signal_handler)  # Handle termination signal
+    
+    try:
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        print("Received interrupt signal. Gracefully stopping server...")
+        server.stop(grace=5.0)  # 5 seconds grace period
+        print("Server stopped.")
+        sys.exit(0)
 
 if __name__ == '__main__':
     serve()
