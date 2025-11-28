@@ -41,7 +41,7 @@
       <div v-if="weatherResponse">
         <p><b>Weather in {{ city }}:</b></p>
         <ul>
-          <li>Temperature: {{ weatherResponse.temperature.toFixed(2) }}°C</li>
+          <li>Temperature: {{ weatherResponse.temperature }}°C</li>
           <li>Humidity: {{ weatherResponse.humidity }}%</li>
           <li>Condition: {{ weatherConditionToString(weatherResponse.condition) }}</li>
           <li>Description: {{ weatherResponse.description }}</li>
@@ -84,16 +84,19 @@ export default {
       if (this.accessMethod === 'grpc-web') {
         const request = new HelloRequest();
         request.setName(this.name);
+        console.log('grpc-web1');
 
-        grpcGreeterClient.sayHello(request, {}, (err, response) => {
-          if (err) {
-            this.status = `Error: ${err.message}`;
-            this.helloResponse = `Error: ${err.code} ${err.message}`;
-          } else {
+        grpcGreeterClient.sayHello(request, {})
+          .then(response => {
+            console.log('grpc-web success', response);
             this.status = 'Unary call successful via gRPC-Web.';
             this.helloResponse = response.getMessage();
-          }
-        });
+          })
+          .catch(err => {
+            console.log('grpc-web error', err);
+            this.status = `Error: ${err.message}`;
+            this.helloResponse = `Error: ${err.code} ${err.message}`;
+          });
       } else { // REST API
         const payload = { name: this.name };
         
@@ -107,7 +110,7 @@ export default {
         .then(response => response.json())
         .then(data => {
           this.status = 'Unary call successful via REST.';
-          this.helloResponse = data.message;
+          this.$set(this, 'helloResponse', data.message);
         })
         .catch(error => {
           this.status = `REST Error: ${error.message}`;
@@ -122,16 +125,16 @@ export default {
       if (this.accessMethod === 'grpc-web') {
         const request = new HelloRequest();
         request.setName(this.name);
-
-        grpcGreeterClient.aggregateHello(request, {}, (err, response) => {
-          if (err) {
-            this.status = `Error: ${err.message}`;
-            this.helloResponse = `Error: ${err.code} ${err.message}`;
-          } else {
+        
+        grpcGreeterClient.aggregateHello(request, {})
+          .then(response => {
             this.status = 'Aggregate call successful via gRPC-Web.';
             this.helloResponse = response.getMessage();
-          }
-        });
+          })
+          .catch(err => {
+            this.status = `Error: ${err.message}`;
+            this.helloResponse = `Error: ${err.code} ${err.message}`;
+          });
       } else { // REST API - AggregateHello is also mapped to REST in .proto
         const payload = { name: this.name };
         
@@ -191,11 +194,8 @@ export default {
         const request = new WeatherRequest();
         request.setCity(this.city);
 
-        grpcWeatherClient.getWeather(request, {}, (err, response) => {
-          if (err) {
-            this.status = `Error: ${err.message}`;
-            this.weatherResponse = null;
-          } else {
+        grpcWeatherClient.getWeather(request, {})
+          .then(response => {
             this.status = 'Weather fetched successfully via gRPC-Web.';
             this.weatherResponse = {
               temperature: response.getTemperature(),
@@ -203,8 +203,11 @@ export default {
               condition: response.getCondition(),
               description: response.getDescription(),
             };
-          }
-        });
+          })
+          .catch(err => {
+            this.status = `Error: ${err.message}`;
+            this.weatherResponse = null;
+          });
       } else { // REST API
         // Using GET request for weather service
         fetch(`http://localhost:8080/v1/weather/${this.city}`)
@@ -275,36 +278,5 @@ ul {
 .access-selector label {
   margin-right: 15px;
   cursor: pointer;
-}
-</style>
-
-<style scoped>
-.greeter {
-  max-width: 800px;
-  margin: auto;
-}
-.service-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 20px;
-}
-input {
-  padding: 8px;
-  margin: 10px;
-}
-button {
-  padding: 8px 12px;
-  margin: 5px;
-  cursor: pointer;
-}
-.status {
-  margin-top: 20px;
-  font-style: italic;
-  color: #555;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
 }
 </style>

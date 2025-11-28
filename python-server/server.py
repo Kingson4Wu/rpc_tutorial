@@ -50,41 +50,14 @@ class GreeterService(services_pb2_grpc.GreeterServicer):
         return services_pb2.HelloReply(message=aggregated_message)
 
 
-class WeatherService(services_pb2_grpc.WeatherServicer):
-    def GetWeather(self, request, context):
-        print(f"Received GetWeather request for city: {request.city}")
-        
-        # Simulate fetching weather data
-        city = request.city
-        temp = round(random.uniform(-10, 35), 1)
-        humidity = random.randint(30, 90)
-        conditions = [
-            services_pb2.SUNNY,
-            services_pb2.CLOUDY,
-            services_pb2.RAINY,
-            services_pb2.STORMY
-        ]
-        condition = random.choice(conditions)
-        
-        description = f"Simulated weather for {city}: {services_pb2.WeatherCondition.Name(condition)}"
-
-        return services_pb2.WeatherReply(
-            temperature=temp,
-            humidity=humidity,
-            condition=condition,
-            description=description
-        )
-
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     
-    # Add both services to the server
     services_pb2_grpc.add_GreeterServicer_to_server(GreeterService(), server)
-    services_pb2_grpc.add_WeatherServicer_to_server(WeatherService(), server)
     
     server.add_insecure_port('[::]:50051')
     server.start()
-    print("Python gRPC server running on port 50051, serving Greeter and Weather services.")
+    print("Python gRPC server running on port 50051, serving Greeter service.")
     server.wait_for_termination()
 
 if __name__ == '__main__':
