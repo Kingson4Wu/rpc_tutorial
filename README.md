@@ -1,5 +1,3 @@
-# gRPC Microservices Architecture Demo
-
 ## 🎯 项目目的
 
 *   **降低接口对接成本**: 通过 `.proto` IDL 文件定义接口，一键生成多语言客户端/服务端代码，消除前后端手动编写接口文档和解析代码的繁琐工作
@@ -30,7 +28,7 @@
         |                           |                  |
   +-----+------+                    +------------------+
   |            |                         |
-  |   User     |                         | (gRPC-Web or REST) - Vue client supports both
+  |   User     |                         | (gRPC-Web or REST)
   | (Browser)  |                         |
   +-----+------+                         v
         |                   +-------------------------+
@@ -47,10 +45,11 @@
                             | (Greeter & Weather)     |     │
                             |      (Port 50051)       |     │
                             |                         |     │
-                            +-------------------------+     │
+                            +------------+------------+     │
                                          ^                  │
-                                         | (gRPC)           │
-                            +-------------------------+     │
+                                         |(gRPC)            |
+                                         v                  │
+                            +------------+------------+     │
                             |                         |     │
                             |     Java gRPC Server    |  ---┘
                             |  (Greeter & Weather)    |
@@ -58,20 +57,30 @@
                             |                         |
                             +-------------------------+
                                           ^
-                                          | (REST/JSON HTTP/1.1)
+                                          | (gRPC)
                                           |
-        +-------------------------> +-------------+    gRPC-Gateway: REST Client → gRPC-Gateway → gRPC
-        |                           |             |      (API Gateway pattern)  
-        |                           |  REST API   |    (Port 8080)
-        |                           |   Client    |
-        +-------------------------> +-------------+
+                            +-------------------------+
+                            |                         |
+                            |   Go gRPC-Gateway       | ←──┘ gRPC → REST/JSON conversion
+                            |    (Port 8080)          |    (API Gateway pattern)
+                            | (gRPC → REST Gateway)   |
+                            +------------+------------+
+                                         |
+                                         | (REST/JSON HTTP/1.1)
+                                         v
+                            +-------------------------+
+                            |                         |
+                            |   REST API Clients      |
+                            |  (Any HTTP Client)      |
+                            |                         |
+                            +-------------------------+
 
 ```
-> **协议适配策略**: 
-> - **Envoy Proxy** (端口 8081): 为浏览器提供 gRPC-Web 支持，实现现代前端直接调用 gRPC 服务
-> - **gRPC-Gateway** (端口 8080): 将 gRPC 服务转换为 RESTful JSON API，适配传统客户端
+> **Protocol Adaptation Strategy**: 
+> - **Envoy Proxy** (port 8081): Provides gRPC-Web support for browsers, enabling modern frontends to directly call gRPC services
+> - **Go gRPC-Gateway** (port 8080): Converts gRPC services to RESTful JSON APIs, adapting to traditional clients
 > 
-> Vue.js 客户端支持**双重协议**，用户可在界面上动态切换访问方式。
+> The Vue.js client supports **dual protocols**, allowing users to dynamically switch between access methods via the UI.
 
 
 ## 🚀 快速开始

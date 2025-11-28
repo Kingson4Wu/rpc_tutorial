@@ -8,12 +8,6 @@ build/
 target/
 out/
 
-# Generated files (gRPC/Protobuf)
-**/services_pb2*.py
-**/services_pb2*.pyc
-**/services_grpc*.py
-**/services*.js
-**/ServicesServiceClientPb*.ts
 
 # Docker
 **/Dockerfile-build-context/

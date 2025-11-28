@@ -44,7 +44,9 @@ services:
       - rpc-network
 
   vue-client:
-    build: ./vue-client
+    build:
+      context: .
+      dockerfile: ./vue-client/Dockerfile
     ports:
       - "8082:80" # Vue app served on 8082 to avoid port conflicts
     depends_on:
