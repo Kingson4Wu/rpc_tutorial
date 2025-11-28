@@ -41,10 +41,10 @@ else
 fi
 
 if grep -q "environment:" vue-client/src/components/Greeter.vue; then
-    echo "✓ Vue client has environment selector"
-else
-    echo "✗ Vue client missing environment selector"
+    echo "✗ Vue client should not have environment selector"
     exit 1
+else
+    echo "✓ Vue client correctly has no environment selector"
 fi
 
 if grep -q "JAVA_SERVER_ADDRESS" docker-compose.yml; then

@@ -125,7 +125,6 @@ make local
 *   **Vue.js 前端**:
     *   访问 `http://localhost:8082`
     *   在界面上选择 **"gRPC-Web via Envoy"** 或 **"REST/JSON via gRPC-Gateway"** 访问方式
-    *   新增 **"Environment"** 选项，可以选择 **"Local"** 或 **"Container"** 以适应不同部署方式
     *   与 `Greeter` 和 `Weather` 服务进行交互
     *   点击 "Aggregate Hello" 按钮来测试双向的后端间调用 (Python ↔ Java)
 
