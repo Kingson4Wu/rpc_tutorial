@@ -62,7 +62,10 @@ coverage.xml
 **/build/
 !java-server/build/  # We might need to keep some build files for Java
 mvnw.cmd
-.mvn/
+# Ignore most .mvn contents but keep wrapper files for reproducible builds
+.mvn/*
+!.mvn/wrapper/
+!.mvn/wrapper/maven-wrapper.properties
 
 # Go
 *.exe

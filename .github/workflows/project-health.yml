@@ -1,10 +1,12 @@
 name: Project Health Check
 
 on:
-  push:
-    branches: [ main, master ]
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - '**'
+  push:
+    branches:
+      - '**'
 
 jobs:
   health-check:
@@ -25,7 +27,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '11'
+        java-version: '17'
         cache: 'maven'
 
     # Setup Python for python-server
