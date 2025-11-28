@@ -47,11 +47,10 @@ static_resources:
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
   clusters:
-  # Python gRPC server cluster
+  # Python gRPC server cluster (外部固定 IP)
   - name: python_grpc_backend
     connect_timeout: 0.25s
-    type: logical_dns
-    # Http2 is required for gRPC
+    type: strict_dns
     http2_protocol_options: {}
     lb_policy: round_robin
     load_assignment:
@@ -61,14 +60,13 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                # This needs to match the service name in docker-compose.yml
-                address: python-server 
+                address: 127.0.0.1
                 port_value: 50051
-  # Java gRPC server cluster                
+
+  # Java gRPC server cluster (外部固定 IP)
   - name: java_grpc_backend
     connect_timeout: 0.25s
-    type: logical_dns
-    # Http2 is required for gRPC
+    type: strict_dns
     http2_protocol_options: {}
     lb_policy: round_robin
     load_assignment:
@@ -78,6 +76,5 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                # This needs to match the service name in docker-compose.yml
-                address: java-server 
+                address: 127.0.0.1
                 port_value: 50052

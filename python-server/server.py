@@ -10,7 +10,7 @@ import services_pb2_grpc
 def get_java_server_greeting(name):
     # Connect to the Java gRPC server
     # The address 'java-server:50052' is the hostname and port defined in docker-compose.yml
-    with grpc.insecure_channel('java-server:50052') as channel:
+    with grpc.insecure_channel('127.0.0.1:50052') as channel:
         stub = services_pb2_grpc.GreeterStub(channel)
         try:
             # Call the SayHello method on the Java server
