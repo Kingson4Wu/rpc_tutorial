@@ -109,9 +109,9 @@ export default {
         })
         .then(response => response.json())
         .then(data => {
-          this.status = 'Unary call successful via REST.';
-          this.$set(this, 'helloResponse', data.message);
-        })
+            this.status = 'Unary call successful via REST.';
+            this.helloResponse = data.message;
+          })
         .catch(error => {
           this.status = `REST Error: ${error.message}`;
           this.helloResponse = `Error: ${error.message}`;

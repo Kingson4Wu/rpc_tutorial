@@ -46,7 +46,29 @@ func run() error {
 	log.Printf("  -> Greeter service routing to: %s", *pythonServerEndpoint)
 	log.Printf("  -> Weather service routing to: %s", *javaServerEndpoint)
 	
-	return http.ListenAndServe(":8080", mux)
+	// Add CORS middleware
+	handler := corsMiddleware(mux)
+	
+	return http.ListenAndServe(":8080", handler)
+}
+
+// CORS middleware to handle preflight requests and add appropriate headers
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Set CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, x-grpc-web, x-user-agent, x-envoy-max-retries")
+
+		// Handle preflight OPTIONS request
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// Pass through to next handler
+		next.ServeHTTP(w, r)
+	})
 }
 
 func main() {
