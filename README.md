@@ -1,22 +1,22 @@
-## 🎯 项目目的
+## 🎯 Project Purpose
 
-*   **降低接口对接成本**: 通过 `.proto` IDL 文件定义接口，一键生成多语言客户端/服务端代码，消除前后端手动编写接口文档和解析代码的繁琐工作
-*   **提高开发效率**: 自动生成类型安全的客户端和服务端代码，减少手动编写和维护的错误，节约大量对接时间
-*   **多协议适配**: 通过 gRPC-Web 支持现代浏览器直接调用，通过 gRPC-Gateway 适配不支持 gRPC 的传统客户端，实现全协议覆盖
-*   **演示真实微服务环境**: 展示服务间双向调用、多语言互操作、API 网关等真实场景
+*   **Reduce Interface Integration Cost**: Define interfaces through `.proto` IDL files, generate multi-language client/server code with one click, eliminating the tedious work of manually writing interface documents and parsing code between frontend and backend
+*   **Improve Development Efficiency**: Automatically generate type-safe client and server code, reduce manual writing and maintenance errors, saving significant integration time
+*   **Multi-protocol Adaptation**: Support direct calls from modern browsers through gRPC-Web, adapt traditional clients that don't support gRPC through gRPC-Gateway, achieving full protocol coverage
+*   **Demonstrate Real Microservice Environment**: Showcase real-world scenarios such as bidirectional service calls, multi-language interoperability, API gateways, etc.
 
-## ✨ 核心优势
+## ✨ Core Advantages
 
-*   **代码自动生成**: 从单一 .proto 文件生成 Python、Java、Go、JavaScript 等多语言代码
-*   **类型安全**: 编译时检查确保前后端数据结构一致性，减少运行时错误
-*   **高效传输**: gRPC 基于 HTTP/2，支持双向流、头部压缩等特性，传输效率远高于 REST/JSON
-*   **跨语言互操作**: 不同语言服务间无缝通信，构建真正的多语言微服务架构
+*   **Code Auto-generation**: Generate multi-language code for Python, Java, Go, JavaScript, etc. from a single .proto file
+*   **Type Safety**: Compile-time checks ensure consistency of frontend and backend data structures, reducing runtime errors
+*   **Efficient Transmission**: gRPC is based on HTTP/2, supporting bidirectional streaming, header compression, and other features, with transmission efficiency far exceeding REST/JSON
+*   **Cross-language Interoperability**: Seamless communication between services in different languages, building a truly multi-language microservice architecture
 
-## 🚀 推荐使用模式
+## 🚀 Recommended Usage Patterns
 
-*   **现代前端应用**: 推荐使用 gRPC-Web 通过 Envoy 代理直接调用后端服务，享受类型安全和高效传输
-*   **传统客户端**: 对于不支持 gRPC 的系统，通过 gRPC-Gateway 提供的 REST/JSON API 进行访问
-*   **服务间通信**: 微服务内部使用原生 gRPC 进行通信，实现最佳性能
+*   **Modern Frontend Applications**: Recommended to use gRPC-Web to directly call backend services through Envoy proxy, enjoying type safety and efficient transmission
+*   **Traditional Clients**: For systems that don't support gRPC, access through REST/JSON APIs provided by gRPC-Gateway
+*   **Service-to-Service Communication**: Use native gRPC for communication within microservices to achieve optimal performance
 
 ## ✅ 架构图
 
@@ -83,29 +83,29 @@
 > The Vue.js client supports **dual protocols**, allowing users to dynamically switch between access methods via the UI.
 
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 两种运行方式
+### Two Running Methods
 
-本项目支持两种运行方式，您可以根据自己的需求选择：
+This project supports two running methods, you can choose according to your needs:
 
-#### 1. 使用 Docker Compose (推荐)
+#### 1. Using Docker Compose (Recommended)
 
-**前提条件**:
+**Prerequisites**:
 *   [Docker](https://www.docker.com/get-started) & [Docker Compose](https://docs.docker.com/compose/install/)
 
-**一键运行项目**:
+**One-click run the project**:
 
-在项目根目录执行以下命令：
+Execute the following command in the project root directory:
 ```bash
 docker-compose up --build
 ```
 
-这将自动构建所有服务的 Docker 镜像并启动完整的微服务架构。
+This will automatically build Docker images for all services and start the complete microservice architecture.
 
-#### 2. 本地开发模式
+#### 2. Local Development Mode
 
-**前提条件**:
+**Prerequisites**:
 * Python 3.7+
 * Java 17+ & Maven 3.6+
 * Go 1.22+
@@ -113,174 +113,174 @@ docker-compose up --build
 * Envoy Proxy
 * Protocol Buffers compiler (protoc) with plugins
 
-**快速启动**:
+**Quick Start**:
 
-使用提供的脚本一键启动所有服务：
+Use the provided script to start all services with one click:
 ```bash
-# 使脚本可执行
+# Make the script executable
 chmod +x run_services.sh
 
-# 启动所有服务
+# Start all services
 ./run_services.sh local
 ```
 
-或使用 Makefile (如果您的系统支持):
+Or use Makefile (if your system supports it):
 ```bash
 make local
 ```
 
-### 访问和测试
+### Access and Testing
 
-*   **Vue.js 前端**:
-    *   访问 `http://localhost:8082`
-    *   在界面上选择 **"gRPC-Web via Envoy"** 或 **"REST/JSON via gRPC-Gateway"** 访问方式
-    *   与 `Greeter` 和 `Weather` 服务进行交互
-    *   点击 "Aggregate Hello" 按钮来测试双向的后端间调用 (Python ↔ Java)
+*   **Vue.js Frontend**:
+    *   Visit `http://localhost:8082`
+    *   Select **"gRPC-Web via Envoy"** or **"REST/JSON via gRPC-Gateway"** access method on the interface
+    *   Interact with `Greeter` and `Weather` services
+    *   Click the "Aggregate Hello" button to test bidirectional backend calls (Python ↔ Java)
 
-*   **直接 REST/JSON API 测试**:
-    *   gRPC-Gateway 服务在 `http://localhost:8080` 上可用
-    *   测试 `Greeter` 服务:
+*   **Direct REST/JSON API Testing**:
+    *   gRPC-Gateway service is available at `http://localhost:8080`
+    *   Test `Greeter` service:
         ```bash
         curl -X POST http://localhost:8080/v1/greeter/say_hello -H "Content-Type: application/json" -d '{"name": "JSON Client"}'
         ```
-    *   测试 `AggregateHello` 服务:
+    *   Test `AggregateHello` service:
         ```bash
         curl -X POST http://localhost:8080/v1/greeter/aggregate_hello -H "Content-Type: application/json" -d '{"name": "JSON Client"}'
         ```
-    *   测试 `Weather` 服务:
+    *   Test `Weather` service:
         ```bash
         curl -X GET http://localhost:8080/v1/weather/Tokyo
         ```
 
-*   **Envoy 管理界面**:
-    *   访问 `http://localhost:9901` 查看 Envoy 的管理和统计信息
+*   **Envoy Management Interface**:
+    *   Visit `http://localhost:9901` to view Envoy's management and statistics information
 
-## 🛠️ 架构组件
+## 🛠️ Architecture Components
 
 ### 1. Protocol Definition (`proto/services.proto`)
 
-*   **统一契约**: 使用 `.proto` IDL 文件作为服务契约，实现接口标准化
-*   **`Greeter` 服务**: 提供 `SayHello` (Unary), `SayHelloStream` (Server Streaming), `AggregateHello` (Bidirectional Backend Communication) 方法
-*   **`Weather` 服务**: 提供 `GetWeather` 方法，演示复杂数据类型（枚举）处理
-*   **HTTP 映射**: 通过 annotations 实现 gRPC 与 REST/JSON 自动映射，支持 gRPC-Gateway
+*   **Unified Contract**: Use `.proto` IDL file as service contract to achieve interface standardization
+*   **`Greeter` Service**: Provides `SayHello` (Unary), `SayHelloStream` (Server Streaming), `AggregateHello` (Bidirectional Backend Communication) methods
+*   **`Weather` Service**: Provides `GetWeather` method, demonstrating complex data type (enumeration) processing
+*   **HTTP Mapping**: Achieve automatic mapping between gRPC and REST/JSON through annotations, supporting gRPC-Gateway
 
 ### 2. Python gRPC Server (`python-server`)
 
-*   **服务实现**: 完整实现 `Greeter` 和 `Weather` 服务接口
-*   **服务间通信**: `AggregateHello` 方法实现服务发现和跨语言调用（Python → Java）
-*   **代码生成**: 通过 `.proto` 文件自动生成客户端/服务端代码，实现类型安全保障
+*   **Service Implementation**: Fully implement `Greeter` and `Weather` service interfaces
+*   **Inter-service Communication**: `AggregateHello` method implements service discovery and cross-language calls (Python → Java)
+*   **Code Generation**: Automatically generate client/server code through `.proto` file, achieving type safety assurance
 
 ### 3. Java Spring Boot gRPC Server (`java-server`)
 
-*   **服务实现**: 实现与 Python 服务相同的接口，展示多语言互操作性
-*   **双向通信**: `AggregateHello` 方法支持反向调用（Java → Python），实现完整双向通信
-*   **Spring Boot 集成**: 使用 Spring Boot 框架集成 gRPC 服务，简化部署和管理
+*   **Service Implementation**: Implement the same interfaces as Python service, showcasing multi-language interoperability
+*   **Bidirectional Communication**: `AggregateHello` method supports reverse calls (Java → Python), achieving complete bidirectional communication
+*   **Spring Boot Integration**: Use Spring Boot framework to integrate gRPC services, simplifying deployment and management
 
 ### 4. Go gRPC-Gateway (`gateway`)
 
-*   **API 网关**: 独立微服务，提供 gRPC → REST/JSON 转换能力
-*   **协议适配**: 为不支持 gRPC 的客户端提供标准 RESTful API 接口
-*   **自动映射**: 基于 `.proto` 文件的 HTTP annotations 自动映射 gRPC 方法到 REST 端点
+*   **API Gateway**: Independent microservice providing gRPC → REST/JSON conversion capability
+*   **Protocol Adaptation**: Provide standard RESTful API interfaces for clients that don't support gRPC
+*   **Automatic Mapping**: Automatically map gRPC methods to REST endpoints based on HTTP annotations in `.proto` file
 
 ### 5. Envoy Proxy (`envoy.yaml`)
 
-*   **gRPC-Web 支持**: 为现代浏览器提供 gRPC-Web 代理功能
-*   **协议转换**: 将 HTTP/1.1 gRPC-Web 请求转换为 HTTP/2 gRPC 请求
-*   **多后端路由**: 支持基于服务名称的智能路由（Greeter服务→Python，Weather服务→Java）
-*   **高性能**: 基于 Lyft Envoy 代理，提供高性能、可观察性、动态配置能力
+*   **gRPC-Web Support**: Provide gRPC-Web proxy functionality for modern browsers
+*   **Protocol Conversion**: Convert HTTP/1.1 gRPC-Web requests to HTTP/2 gRPC requests
+*   **Multi-backend Routing**: Support intelligent routing based on service names (Greeter service → Python, Weather service → Java)
+*   **High Performance**: Based on Lyft Envoy proxy, providing high performance, observability, and dynamic configuration capabilities
 
 ### 6. Vue.js Client (`vue-client`)
 
-*   **自动生成客户端**: 基于 `.proto` 文件生成类型安全的 JavaScript/TypeScript gRPC 客户端
-*   **双重访问模式**: 同时支持 gRPC-Web（通过 Envoy）和 REST/JSON（通过 gRPC-Gateway）
-*   **用户体验**: 提供直观的 UI 界面，用户可动态切换访问协议
-*   **开发效率**: 消除手动 API 集成，通过代码生成实现快速开发
+*   **Auto-generated Client**: Generate type-safe JavaScript/TypeScript gRPC client based on `.proto` file
+*   **Dual Access Mode**: Support both gRPC-Web (through Envoy) and REST/JSON (through gRPC-Gateway)
+*   **User Experience**: Provide intuitive UI interface, allowing users to dynamically switch access protocols
+*   **Development Efficiency**: Eliminate manual API integration, achieving rapid development through code generation
 
-## 🚀 单独运行服务（本地开发模式）
+## 🚀 Running Services Separately (Local Development Mode)
 
-### 前提条件
+### Prerequisites
 
-要单独运行服务，需要安装以下依赖：
+To run services separately, you need to install the following dependencies:
 
-* **Python 服务**：
+* **Python Service**:
   * Python 3.7+
   * pip
   * grpcio, grpcio-tools, and protobuf packages
 
-* **Java 服务**：
+* **Java Service**:
   * Java 17+
   * Maven 3.6+
 
-* **Go gRPC-Gateway**：
+* **Go gRPC-Gateway**:
   * Go 1.22+
   * Protocol Buffers compiler (protoc)
   * Go gRPC and gRPC-Gateway plugins
 
-* **Vue.js 客户端**：
+* **Vue.js Client**:
   * Node.js 16+
   * npm or yarn
 
-* **Envoy Proxy**：
-  * Envoy Proxy (用于本地 gRPC-Web 支持)
+* **Envoy Proxy**:
+  * Envoy Proxy (for local gRPC-Web support)
 
-* **通用**：
+* **General**:
   * Protocol Buffers compiler (protoc)
   * Protobuf plugins: protoc-gen-go, protoc-gen-go-grpc, protoc-gen-grpc-gateway, protoc-gen-js, protoc-gen-grpc-web
 
-### 使用便捷脚本运行（推荐）
+### Running with Convenient Script (Recommended)
 
-项目提供了便捷脚本，可以一键启动所有本地服务：
+The project provides a convenient script that can start all local services with one click:
 
 ```bash
-# 使脚本可执行
+# Make the script executable
 chmod +x run_services.sh
 
-# 启动所有本地服务
+# Start all local services
 ./run_services.sh local
 
-# 停止所有本地服务
+# Stop all local services
 ./run_services.sh stop-local
 ```
 
-或者使用 Makefile（如果您的系统支持）：
+Or use Makefile (if your system supports it):
 
 ```bash
-# 使用 Make 启动所有本地服务
+# Use Make to start all local services
 make local
 
-# 停止所有本地服务
+# Stop all local services
 make clean
 ```
 
-### 手动运行各个服务
+### Manually Running Individual Services
 
 #### Python gRPC Server
 
 ```bash
-# 进入 Python 服务目录
+# Enter Python service directory
 cd python-server
 
-# 创建并激活虚拟环境
+# Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# 安装依赖
+# Install dependencies
 pip install -r requirements.txt
 
-# 运行服务（默认端口 50051）
+# Run service (default port 50051)
 python server.py
 ```
 
 #### Java gRPC Server
 
 ```bash
-# 进入 Java 服务目录
+# Enter Java service directory
 cd java-server
 
-# 使用 Maven 运行（默认端口 50052）
+# Run with Maven (default port 50052)
 ./mvnw spring-boot:run
 
-# 或者打包后运行
+# Or package and run
 ./mvnw clean package -DskipTests
 java -jar target/java-server-0.0.1-SNAPSHOT.jar
 ```
@@ -288,51 +288,51 @@ java -jar target/java-server-0.0.1-SNAPSHOT.jar
 #### Go gRPC-Gateway
 
 ```bash
-# 进入 Gateway 目录
+# Enter Gateway directory
 cd gateway
 
-# 确保已安装 Go 依赖
+# Ensure Go dependencies are installed
 go mod download
 
-# 运行 Gateway（支持路由到多个后端服务，默认端口 8080）
-# 默认路由：Greeter 服务到 Python，Weather 服务到 Java
+# Run Gateway (supports routing to multiple backend services, default port 8080)
+# Default routing: Greeter service to Python, Weather service to Java
 go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=localhost:50052
 
-# 或者自定义路由配置
+# Or custom routing configuration
 go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=localhost:50053
 ```
 
-#### Envoy Proxy (本地环境)
+#### Envoy Proxy (Local Environment)
 
-对于本地开发，使用专门的 envoy-local.yaml 配置文件：
+For local development, use the dedicated envoy-local.yaml configuration file:
 
 ```bash
-# 单独运行 Envoy 需要先安装 Envoy
-# 运行本地 Envoy（默认端口 8081，支持多后端路由）
+# Running Envoy separately requires installing Envoy first
+# Run local Envoy (default port 8081, supports multi-backend routing)
 envoy -c envoy-local.yaml --base-id 1
 ```
 
 #### Vue.js Client
 
 ```bash
-# 进入 Vue 客户端目录
+# Enter Vue client directory
 cd vue-client
 
-# 安装依赖
+# Install dependencies
 npm install
 
-# 开发模式运行（默认端口 8082）
+# Run in development mode (default port 8082)
 npm run serve
 
-# 或者构建后运行
+# Or build and run
 npm run build
-# 然后使用任意 HTTP 服务器提供服务，如：
+# Then serve with any HTTP server, such as:
 npx serve -s dist
 ```
 
-### 重新生成 Protobuf 代码
+### Regenerating Protobuf Code
 
-如果修改了 `proto/services.proto` 文件，需要重新生成所有语言的代码：
+If you modify the `proto/services.proto` file, you need to regenerate code for all languages:
 
 ```bash
 # Python
@@ -348,17 +348,17 @@ protoc -I=./proto --java_out=./java-server/src/main/java --grpc-java_out=./java-
 protoc -I=./proto --js_out=import_style=commonjs,binary:./vue-client/src/generated --grpc-web_out=import_style=typescript,mode=grpcwebtext:./vue-client/src/generated ./proto/services.proto
 ```
 
-### 手动启动完整环境
+### Manually Starting Complete Environment
 
-按以下顺序启动服务：
+Start services in the following order:
 
-1. 启动 Java 服务: `cd java-server && ./mvnw spring-boot:run`
-2. 启动 Python 服务: `cd python-server && source venv/bin/activate && python server.py`
-3. 启动 Go Gateway: `cd gateway && go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=localhost:50052`
-4. 启动本地 Envoy: `envoy -c envoy-local.yaml`
-5. 启动 Vue client: `cd vue-client && npm run serve`
+1. Start Java service: `cd java-server && ./mvnw spring-boot:run`
+2. Start Python service: `cd python-server && source venv/bin/activate && python server.py`
+3. Start Go Gateway: `cd gateway && go run main.go --python-server-endpoint=localhost:50051 --java-server-endpoint=localhost:50052`
+4. Start local Envoy: `envoy -c envoy-local.yaml`
+5. Start Vue client: `cd vue-client && npm run serve`
 
-所有服务将通过 localhost 相互通信，访问地址与 Docker 配置相同：
+All services will communicate with each other through localhost, with access addresses the same as Docker configuration:
 * Vue.js Client: http://localhost:8082
 * gRPC-Gateway: http://localhost:8080
 * Envoy Proxy: http://localhost:8081
@@ -369,15 +369,15 @@ Envoy will route requests intelligently:
 * Greeter service requests → Python server (localhost:50051)
 * Weather service requests → Java server (localhost:50052)
 
-### 配置说明
+### Configuration Notes
 
-#### Envoy 配置
+#### Envoy Configuration
 
-* `envoy.yaml` - 用于容器化环境，使用容器服务名称作为后端地址 (python-server:50051, java-server:50052)
-* `envoy-local.yaml` - 用于本地开发环境，使用 localhost 作为后端地址 (127.0.0.1:50051, 127.0.0.1:50052)
+* `envoy.yaml` - Used for containerized environments, using container service names as backend addresses (python-server:50051, java-server:50052)
+* `envoy-local.yaml` - Used for local development environment, using localhost as backend addresses (127.0.0.1:50051, 127.0.0.1:50052)
 
-#### 环境变量
+#### Environment Variables
 
-* 本地运行时 Python 服务默认连接到 `localhost:50052`
-* Docker 运行时通过环境变量 `JAVA_SERVER_ADDRESS=java-server:50052` 指定 Java 服务地址
-* Gateway 根据 `ENV=docker` 环境变量自动使用正确的后端地址
+* Python service connects to `localhost:50052` by default when running locally
+* Docker runtime specifies Java service address through environment variable `JAVA_SERVER_ADDRESS=java-server:50052`
+* Gateway automatically uses correct backend address based on `ENV=docker` environment variable

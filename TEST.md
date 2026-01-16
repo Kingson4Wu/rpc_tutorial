@@ -111,9 +111,9 @@ curl -s http://localhost:8081/rpc_tutorial.Greeter/SayHello \
 dd if=resp.bin of=resp_pb.bin bs=1 skip=5
 protoc -I proto -I ../googleapis \
   --decode=rpc_tutorial.HelloReply proto/services.proto < resp_pb.bin
-# 读取第一个 frame header，得到长度
+# Read the first frame header to get the length
 payload_len=$(xxd -p -l 4 -s 1 resp.bin | tr -d '\n' | awk '{printf "%d\n", "0x"$0}')
-# 提取 DATA frame payload
+# Extract DATA frame payload
 dd if=resp.bin of=resp_pb.bin bs=1 skip=5 count=$payload_len
 protoc -I proto -I ../googleapis --decode=rpc_tutorial.HelloReply proto/services.proto < resp_pb.bin
 message: "Hello, Kingson from Python gRPC Server!"
